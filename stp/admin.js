@@ -5,7 +5,8 @@ const serializer = require("./serializer");
 
 module.exports = admin;
 
-function admin(socket) {
+function admin(socket, stpStack) {
+    this.stpStack = stpStack;
     this.state = null;
     this.socket = socket;
     this.messenger = new messenger();
@@ -25,8 +26,7 @@ admin.prototype.__onMessage = function __onMessage(message) {
     if (message.bodyLength !== 0) {
         message.params = this.parser.__parse(message.bodyBuffer);
     }
-
-    console.log(message)
+    this.stpStack.__route(message);
 }
 
 admin.prototype.__setState = function __setState(state) {
