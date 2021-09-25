@@ -2,6 +2,7 @@ const connectionHandler = require("./connectionHandler");
 const messenger = require("./messenger");
 const parser = require("./parser");
 const serializer = require("./serializer");
+const response = require("./response");
 
 module.exports = admin;
 
@@ -26,9 +27,20 @@ admin.prototype.__onMessage = function __onMessage(message) {
     if (message.bodyLength !== 0) {
         message.params = this.parser.__parse(message.bodyBuffer);
     }
-    this.stpStack.__route(message);
+
+    const _response = new response(message.id, this);
+    this.stpStack.__route(message, this.state, _response);
 }
 
 admin.prototype.__setState = function __setState(state) {
     this.state = state;
+}
+
+// just a wrapper
+admin.prototype.__serialize = function __serialize(data) {
+    return this.serializer.__serialize(data);
+}
+
+admin.prototype.__send = function __send(buf) {
+    this.socket.write(buf);
 }

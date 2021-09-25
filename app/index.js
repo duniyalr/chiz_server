@@ -1,4 +1,5 @@
 const routerListItem = require("./routerListItem");
+const accessListItem = require("./accessListItem");
 const {ACCESS, ROUTE} = require("./enums");
 const db = require("./db");
 
@@ -8,9 +9,16 @@ const routerList = [
         ACCESS.PUBLIC,
 
     ),
+];
+
+const accessList = [
+    accessListItem(
+        ACCESS.PUBLIC
+    )
 ]
 
 module.exports = {
     db,
-    routerList
+    routerList,
+    accessList
 }

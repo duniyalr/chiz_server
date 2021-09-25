@@ -1,5 +1,5 @@
 const stp = require("../stp")
-const {db, routerList} = require("../app");
+const {db, routerList, accessList} = require("../app");
 const router = require("../router");
 
 module.exports = StpStack;
@@ -8,6 +8,8 @@ function StpStack() {
     this.stack = new Map();
     this.router = router();
     this.router.__setList(routerList);
+    this.router.__setAccessList(accessList);
+    this.router.__setDB(db);
 }
 
 /**
@@ -21,6 +23,7 @@ StpStack.prototype.__onConnection = function __onConnection(socket) {
     return _stp;
 }
 
-StpStack.prototype.__route = function __route(msg) {
-    console.log(msg)
+// a wrapper for router.__route
+StpStack.prototype.__route = function __route(req, state, res) {
+    this.router.__route(req, state, res);
 }
