@@ -32,11 +32,12 @@ router.prototype.__route = function __route(req, state, res) {
     if(access.func) {
         access.func(req, state, res, this);
     } else {
-        this.afterAccess(null, req, state, this.db, res);
+        const dbConn = this.db.dbManager.__getConn();
+        this.__afterAccess(null, req, state, dbConn, res);
     }
 }
 
-router.prototype.afterAccess = function afterAccess(err, req, state, db, res) {
+router.prototype.__afterAccess = function afterAccess(err, req, state, db, res) {
     if (err) {
         return;   
     }

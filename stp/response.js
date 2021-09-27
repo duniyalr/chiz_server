@@ -18,3 +18,7 @@ response.prototype.__routerError = function __routerError(err) {
     console.log("error from router.");
     throw err;
 }
+
+response.prototype.__setState = function __setState(state) {
+    this.stp.state = state;
+}

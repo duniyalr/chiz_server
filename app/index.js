@@ -1,5 +1,6 @@
 const routerListItem = require("./routerListItem");
 const accessListItem = require("./accessListItem");
+const access = require("./access");
 const {ACCESS, ROUTE} = require("./enums");
 const db = require("./db");
 
@@ -13,7 +14,8 @@ const routerList = [
 
 const accessList = [
     accessListItem(
-        ACCESS.PUBLIC
+        ACCESS.PUBLIC,
+        access.login
     )
 ]
 

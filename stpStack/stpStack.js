@@ -9,7 +9,7 @@ function StpStack() {
     this.router = router();
     this.router.__setList(routerList);
     this.router.__setAccessList(accessList);
-    this.router.__setDB(db);
+    this.router.__setDB(db.manager);
 }
 
 /**
