@@ -25,9 +25,11 @@ function messenger() {
  * @param {buffer} data 
  */
 messenger.prototype.__onData = function __onData(data) {
+    console.log('data', data)
     if (data)
         this.bufferPanel.__add(data);
     const dataSize = this.bufferPanel.__getAvailableBytes();
+    console.log('data size', dataSize)
     if (STATUS.IDLE === this.status) {
         if (FIRST_DATA_MIN_SIZE < dataSize) {
             this.newMessage(data);
@@ -44,6 +46,7 @@ messenger.prototype.__onData = function __onData(data) {
  * @api private
  */
 messenger.prototype.newMessage = function newMessage() {
+    console.log('new message')
     this.message = new Message();
     // set the header
     this.message.version = this.bufferPanel.__getUInt16BE();
@@ -54,17 +57,21 @@ messenger.prototype.newMessage = function newMessage() {
     this.message.id = this.bufferPanel.__getUInt16BE();
     this.message.requestId = this.bufferPanel.__getUInt16BE();
     this.message.route = this.bufferPanel.__getUInt16BE();
-    
     if (this.message.bodyLength !== 0)
         this.remainingLength = this.message.bodyLength;
-    
+    console.log(this.message, this.bufferPanel)
     this.status = STATUS.RECIEVING;
 }
 
 messenger.prototype.finishMessage = function finishMessage() {
-    this.message.bodyBuffer = this.bufferPanel.__getChunk(this.message.bodyLength);
+    console.log('finish message')
+    if (this.message.bodyLength)
+        this.message.bodyBuffer = this.bufferPanel.__getChunk(this.message.bodyLength);
+    // this.bufferPanel.__clean();
     this.status = STATUS.IDLE;
     this.remainingLength = 0;
+    
+    // console.log(this.message)
     this.onMessage(this.message);
     this.message = null;
 }   

@@ -6,26 +6,32 @@ module.exports = serializer;
 
 function serializer() {
     this.bufferWriter = new bufferWriter();
-    this.bufferWriter.requestBuffer();
+    // test ===
+
+    //=== test
 }
 
 serializer.prototype.__serialize = function __serialize(data) {
+    // test ===
+        this.bufferWriter.requestBuffer();
+    // === test
+
     if (!Array.isArray(data)) data = [data];
     this.serialize(data);
     const res = this.bufferWriter.__collect(12 /*this is size of the header*/);
-    this.bufferWriter.clean();
+    this.bufferWriter.__clean();
     return res;
 }
 // WARNING
 // we can just remove writeValue and because its use is so few make another function 
 // and pass the value there for this work;
 serializer.prototype.serialize = function serialize(data, writeType = true, writeValue = true) {
-    for (const item of data) {
+    for (let item of data) {
         const _type = typeof item;
         switch(_type){
             case 'boolean': 
                 if (writeType) this.bufferWriter.__writeUInt8(TYPE.BOOL);
-                this.bufferWriter.__writeUInt8(item ? 1 : 0);
+                if (writeValue) this.bufferWriter.__writeUInt8(item ? 1 : 0);
                 break;
             case 'number':
                 let _typeItem;
@@ -56,7 +62,9 @@ serializer.prototype.serialize = function serialize(data, writeType = true, writ
                 }
                 break;
             case 'string':
-                if (item.length === 1) {
+                if (item.length === -1) {
+                    // char makes a bug in serializing for dictionaries
+                    // if you want to active then you should consider that
                     if (writeType) this.bufferWriter.__writeUInt8(TYPE.CHAR);
                     if (writeValue) this.bufferWriter.__writeString(item);
                 } else {
@@ -70,18 +78,42 @@ serializer.prototype.serialize = function serialize(data, writeType = true, writ
             case 'object':
                 if (Array.isArray(item)) {
                     // at this point there is no fixed type array;
-                    this.bufferWriter.__writeUInt8(TYPE.ARRAY);
-                    this.serialize(item);
+                    if (writeType) this.bufferWriter.__writeUInt8(TYPE.ARRAY_COMPLEX);
+                    if (writeValue) {
+                        this.bufferWriter.__writeUInt16(item.length);
+                        this.serialize(item);
+                    }
                 } else {
-                    this.bufferWriter.__writeUInt8(TYPE.DICTIONARY);
+                    let arr = null;
+                    if(item.dictionaryList) {
+                        arr = item.array;
+                        item = arr[0];
+                    } 
+                    if (writeType) 
+                        this.bufferWriter.__writeUInt8(arr ? TYPE.DICTIONARY_LIST : TYPE.DICTIONARY);
+
+
+
+                    if (!writeValue) continue;
+
+
                     // WARNING should found another way for counting the properties;
                     const keys = Object.keys(item);
                     this.bufferWriter.__writeUInt16(keys.length);
                     
                     this.serialize(keys, false);
-                    const values = Object.values(item);
+                    let values = Object.values(item);
                     this.serialize(values, true, false);
-                    this.serialize(values, false, true);
+                    if (!arr) {
+                        return this.serialize(values, false, true);
+                    }
+                    // writing the array length;
+                    this.bufferWriter.__writeUInt16(arr.length);
+                    
+                    for (const arrItem of arr) {
+                        console.log(arrItem)
+                        this.serialize(Object.values(arrItem), false, true);
+                    }
                 }
         }
     }

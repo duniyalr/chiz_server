@@ -14,6 +14,7 @@ module.exports = {
         "STRING",
         "ARRAY",
         "ARRAY_COMPLEX",
-        "DICTIONARY"
+        "DICTIONARY",
+        "DICTIONARY_LIST"
     ])
 }

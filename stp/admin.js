@@ -21,13 +21,14 @@ function admin(socket, stpStack) {
     socket.on("data", this.messenger.__onData.bind(this.messenger));
 
     socket.on("close", this.connectionHandler.__onClose);
+    socket.on("error", this.__onSocketError.bind(this));
 }
 
 admin.prototype.__onMessage = function __onMessage(message) {
     if (message.bodyLength !== 0) {
         message.params = this.parser.__parse(message.bodyBuffer);
     }
-
+    
     const _response = new response(message.id, this);
     this.stpStack.__route(message, this.state, _response);
 }
@@ -43,4 +44,8 @@ admin.prototype.__serialize = function __serialize(data) {
 
 admin.prototype.__send = function __send(buf) {
     this.socket.write(buf);
+}
+
+admin.prototype.__onSocketError = function __onSocketError() {
+    console.log('socket error');
 }

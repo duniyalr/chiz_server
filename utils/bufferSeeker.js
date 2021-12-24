@@ -4,11 +4,17 @@ module.exports = bufferSeeker;
 
 function bufferSeeker() {
     this.buffer = null;
+    this.size = 0;
     this.seek = 0;
+}
+
+bufferSeeker.prototype.__getRemaining = function __getRemaining() {
+    return this.size - this.seek;
 }
 
 bufferSeeker.prototype.__reset = function __reset(buf) {
     this.buffer = buf;
+    this.size = buf.length;
     this.seek = 0;
 }
 
@@ -49,7 +55,7 @@ bufferSeeker.prototype.__readInt32 = function __readInt32() {
 }
 
 bufferSeeker.prototype.__readString = function __readString(length) {
-    const res = this.buffer.toString("utf8", this.seek, this.seek + length)
+    const res = this.buffer.toString("utf8", this.seek, this.seek + length);
     this.seek += length;
     return res;
 }

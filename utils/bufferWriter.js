@@ -106,18 +106,20 @@ bufferWriter.prototype.__writeString = function __writeString(str) {
         } else {
             this.activeBuffer.buffer.write(str.substr(0), this.activeBuffer.seek);
             const _length = this.activeBuffer.remaining;
-            this.size += this.activeBuffer;
-            this.activeBuffer.seek += length;
+            this.size += _length //this.activeBuffer;
+            this.activeBuffer.seek += _length;
             this.activeBuffer.remaining = 0;
-            this.__writeString(str.substr(length), this.activeBuffer.seek);
+            this.__writeString(str.substr(_length), this.activeBuffer.seek);
         }
     } else {
         let size = this.bufferSize;
         if (str.length > this.bufferSize) size = str.length;
+        console.log(this.bufferArray.length)
         this.requestBuffer(size);
-        this.activeBuffer.write(str, this.activeBuffer.seek);
-        this.activeBuffer.remaining = 0;
-        this.activeBuffer.seek += size;
+        this.activeBuffer.buffer.write(str, this.activeBuffer.seek);
+        this.size += str.length;
+        this.activeBuffer.remaining -= str.length;
+        this.activeBuffer.seek += str.length;
     }
 }
 

@@ -18,7 +18,7 @@ Parser.prototype.__parse = function __parse(buf) {
 
 Parser.prototype.parse = function parse(length, lockType) {
     const stack = [];
-    let size = 0;
+    // let size = 0;
     let type = null;
     this.typePatternCursors.push(0);
     while (this.whiler(stack, length)) {

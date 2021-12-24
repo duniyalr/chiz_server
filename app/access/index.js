@@ -1,8 +1,14 @@
 module.exports = {
-    login, 
+    public, 
+    user
 }
 
-function login(req, state, res, router) {
+function public(req, state, res, router) {
     const db = router.dbManager.__getConn();
-    router.__afterAccess(null, req, state, db, res);
+    return router.__afterAccess(null, req, state, db, res);
+}
+
+function user(req, state, res, router) {
+    const db = router.dbManager.__getConn();
+    return router.__afterAccess(null, req, state, db, res);
 }
